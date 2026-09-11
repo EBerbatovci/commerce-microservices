@@ -1,0 +1,41 @@
+@gateway = http://localhost:5100
+@catalog = http://localhost:5101
+@orders = http://localhost:5102
+
+### Gateway overview
+GET {{gateway}}/
+
+### Catalog readiness
+GET {{catalog}}/health/ready
+
+### List products through the gateway
+GET {{gateway}}/catalog/api/products
+
+### Create a product through the gateway
+POST {{gateway}}/catalog/api/products
+Content-Type: application/json
+
+{
+  "name": "4K Monitor",
+  "description": "27-inch monitor for development and design.",
+  "price": 329.90,
+  "stock": 12
+}
+
+### List orders through the gateway
+GET {{gateway}}/orders/api/orders
+
+### Create an order through the gateway
+# Replace productId with an id returned by GET /catalog/api/products.
+POST {{gateway}}/orders/api/orders
+Content-Type: application/json
+
+{
+  "customerEmail": "customer@commerce.dev",
+  "items": [
+    {
+      "productId": "00000000-0000-0000-0000-000000000001",
+      "quantity": 1
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+services:
+  catalog-api:
+    build:
+      context: .
+      dockerfile: src/Catalog.API/Dockerfile
+    container_name: commerce-catalog-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: 8080
+      ConnectionStrings__CatalogDatabase: Data Source=/data/catalog.db
+    ports:
+      - "5101:8080"
+    volumes:
+      - catalog-data:/data
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8080 && printf 'GET /health/ready HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' >&3 && grep -q '200 OK' <&3"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  order-api:
+    build:
+      context: .
+      dockerfile: src/Order.API/Dockerfile
+    container_name: commerce-order-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: 8080
+      ConnectionStrings__OrderDatabase: Data Source=/data/orders.db
+      Services__Catalog: http://catalog-api:8080
+    ports:
+      - "5102:8080"
+    volumes:
+      - order-data:/data
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8080 && printf 'GET /health/ready HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' >&3 && grep -q '200 OK' <&3"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      catalog-api:
+        condition: service_healthy
+
+  gateway-api:
+    build:
+      context: .
+      dockerfile: src/Gateway.API/Dockerfile
+    container_name: commerce-gateway-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Docker
+      ASPNETCORE_HTTP_PORTS: 8080
+    ports:
+      - "5100:8080"
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8080 && printf 'GET /health/ready HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' >&3 && grep -q '200 OK' <&3"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      catalog-api:
+        condition: service_healthy
+      order-api:
+        condition: service_healthy
+
+volumes:
+  catalog-data:
+  order-data:
