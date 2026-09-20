@@ -45,6 +45,12 @@ secrets.json
 *.p12
 *.key
 *.pem
+*.pubxml
+*.pubxml.user
+*.snk
+*.cer
+*.crt
+*.der
 NuGet.Config
 
 # Operating-system files

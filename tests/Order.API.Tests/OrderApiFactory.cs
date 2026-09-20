@@ -20,7 +20,7 @@ public sealed class OrderApiFactory : WebApplicationFactory<Program>
         builder.ConfigureAppConfiguration(configuration =>
             configuration.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["ConnectionStrings:OrderDatabase"] = $"Data Source={_databasePath}",
+                ["ConnectionStrings:OrderDatabase"] = $"Data Source={_databasePath};Pooling=False",
                 ["Services:Catalog"] = "http://catalog.test"
             }));
         builder.ConfigureServices(services =>
@@ -46,9 +46,21 @@ public sealed class OrderApiFactory : WebApplicationFactory<Program>
 
     private static void DeleteDatabaseFile(string path)
     {
-        if (File.Exists(path))
+        for (var attempt = 0; attempt < 5; attempt++)
         {
-            File.Delete(path);
+            try
+            {
+                File.Delete(path);
+                return;
+            }
+            catch (IOException) when (attempt < 4)
+            {
+                Thread.Sleep(25);
+            }
+            catch (UnauthorizedAccessException) when (attempt < 4)
+            {
+                Thread.Sleep(25);
+            }
         }
     }
 }

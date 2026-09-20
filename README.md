@@ -11,6 +11,11 @@ YARP gateway provides one public entry point. It is designed as an architecture
 demonstration and local development system—not as a claim of production
 deployment.
 
+## Author and portfolio purpose
+
+This project was designed and implemented by Endrina Berbatovci as a backend
+architecture and microservices portfolio project.
+
 ## Architecture
 
 ```mermaid
@@ -54,10 +59,12 @@ defined in `docker-compose.yml`.
 ## Run locally with Docker
 
 Requirements: Git and Docker Desktop.
+Clone the [repository](https://github.com/EBerbatovci/commerce-microservices.git)
+and enter its nested project directory:
 
 ```bash
-git clone <repository-url>
-cd commerce-microservices
+git clone https://github.com/EBerbatovci/commerce-microservices.git
+cd commerce-microservices/commerce-microservices
 docker compose up --build
 ```
 
@@ -85,7 +92,7 @@ SQLite volumes.
 
 ## Run without Docker
 
-Requirements: .NET 8 SDK. From three terminals at the repository root:
+Requirements: .NET 8 SDK. From three terminals in the project directory:
 
 ```bash
 dotnet run --project src/Catalog.API
@@ -249,5 +256,13 @@ demo choices, not recommendations for every production workload.
 - EF Core migrations and a production-oriented relational database
 - Rate limiting, API versioning, and contract tests
 
-Contribution and security guidance are available in
-[CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md).
+Security reporting guidance is available in [SECURITY.md](SECURITY.md).
+
+## Copyright and usage
+
+Copyright © 2026 Endrina Berbatovci. All rights reserved.
+
+This repository is publicly available for portfolio review and technical
+evaluation. Public availability does not grant an open-source license.
+No permission is granted to reuse, modify, redistribute, sublicense, or use
+this work commercially without prior written permission.

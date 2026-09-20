@@ -16,7 +16,7 @@ public sealed class CatalogApiFactory : WebApplicationFactory<Program>
         builder.ConfigureAppConfiguration(configuration =>
             configuration.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["ConnectionStrings:CatalogDatabase"] = $"Data Source={_databasePath}"
+                ["ConnectionStrings:CatalogDatabase"] = $"Data Source={_databasePath};Pooling=False"
             }));
     }
 
@@ -34,9 +34,21 @@ public sealed class CatalogApiFactory : WebApplicationFactory<Program>
 
     private static void DeleteDatabaseFile(string path)
     {
-        if (File.Exists(path))
+        for (var attempt = 0; attempt < 5; attempt++)
         {
-            File.Delete(path);
+            try
+            {
+                File.Delete(path);
+                return;
+            }
+            catch (IOException) when (attempt < 4)
+            {
+                Thread.Sleep(25);
+            }
+            catch (UnauthorizedAccessException) when (attempt < 4)
+            {
+                Thread.Sleep(25);
+            }
         }
     }
 }
